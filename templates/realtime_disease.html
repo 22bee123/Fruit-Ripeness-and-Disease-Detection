@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time {{ fruit_type.capitalize() }} Disease Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image:url({{url_for('static', filename='image.jpg')}});
+            background-repeat:no-repeat;
+            background-attachment:fixed;
+            background-size:100% 100%;
+            background-position:center;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            color: #007bff;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff7300, #ff0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .video-container {
+            width: 100%;
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #000; /* Black background for video */
+        }
+        #video-feed {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+        .camera-error {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            background-color: rgba(255, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        .info-container {
+            width: 100%;
+            padding: 20px;
+            background: rgba(248, 249, 250, 0.9);
+            border-radius: 10px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .info-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            background: #007bff;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 24px;
+        }
+        .back-btn {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .back-btn a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            transition: color 0.3s;
+            font-size: 20px;
+            display: inline-block;
+            background-color: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        .back-btn a:hover {
+            color: #0056b3;
+        }
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+            display: block;
+        }
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .reload-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            display: none;
+        }
+        .reload-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Media Query for Laptop Screens */
+        @media screen and (min-width: 768px) {
+            .container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+            .video-container {
+                width: 60%;
+            }
+            .info-container {
+                width: 35%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real-time {{ fruit_type.capitalize() }} Disease Detection</h1>
+        <div class="video-container">
+            <div id="loading-spinner" class="loading-spinner"></div>
+            <img id="video-feed" src="{{ url_for('video_feed_disease', fruit_type=fruit_type) }}" alt="Video Feed" style="display: none;" onload="videoLoaded()" onerror="showCameraError()">
+            <div id="camera-error" class="camera-error">Camera not available. Please check your camera connection.</div>
+            <button id="reload-btn" class="reload-btn" onclick="reloadVideoFeed()">Reload Camera</button>
+        </div>
+        <div class="info-container">
+            <h2>Disease Detection Info</h2>
+            <p>This system detects diseases in {{ fruit_type }} in real-time using your camera.</p>
+            <p>The model can identify the following diseases:</p>
+            <ul>
+                {% if fruit_type == 'banana' %}
+                <li>Black Sigatoka</li>
+                <li>Healthy</li>
+                <li>Panama Disease</li>
+                <li>Yellow Sigatoka</li>
+                {% elif fruit_type == 'mango' %}
+                <li>Anthracnose</li>
+                <li>Bacterial Canker</li>
+                <li>Cutting Weevil</li>
+                <li>Die Back</li>
+                <li>Healthy</li>
+                <li>Powdery Mildew</li>
+                <li>Sooty Mould</li>
+                {% elif fruit_type == 'pomogranate' %}
+                <li>Bacterial Blight</li>
+                <li>Healthy</li>
+                <li>Leaf Spot</li>
+                <li>Fruit Spot</li>
+                {% endif %}
+            </ul>
+            <p>For best results:</p>
+            <ul>
+                <li>Hold the fruit close to the camera</li>
+                <li>Ensure good lighting</li>
+                <li>Show the affected area clearly</li>
+            </ul>
+            <div class="back-btn">
+                <a href="/disease_detection">Back to Disease Menu</a>
+                <a href="/">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const videoFeed = document.getElementById('video-feed');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const cameraError = document.getElementById('camera-error');
+        const reloadBtn = document.getElementById('reload-btn');
+        
+        // Set a timeout to show error if video doesn't load
+        let loadTimeout = setTimeout(function() {
+            showCameraError();
+        }, 10000); // Increased timeout to 10 seconds
+        
+        function videoLoaded() {
+            // Video loaded successfully
+            clearTimeout(loadTimeout);
+            loadingSpinner.style.display = 'none';
+            videoFeed.style.display = 'block';
+            cameraError.style.display = 'none';
+            reloadBtn.style.display = 'none';
+            
+            // Add event listener to detect if the stream stops
+            videoFeed.addEventListener('error', function() {
+                showCameraError();
+            });
+        }
+        
+        function showCameraError() {
+            loadingSpinner.style.display = 'none';
+            videoFeed.style.display = 'none';
+            cameraError.style.display = 'block';
+            reloadBtn.style.display = 'block';
+            console.error('Camera feed error detected');
+        }
+        
+        function reloadVideoFeed() {
+            // Show loading spinner
+            loadingSpinner.style.display = 'block';
+            cameraError.style.display = 'none';
+            
+            // Reload the video feed with a cache-busting parameter
+            const timestamp = new Date().getTime();
+            videoFeed.src = "{{ url_for('video_feed_disease', fruit_type=fruit_type) }}?" + timestamp;
+            
+            // Reset timeout
+            clearTimeout(loadTimeout);
+            loadTimeout = setTimeout(function() {
+                showCameraError();
+            }, 10000);
+        }
+        
+        // Check if the page is visible or hidden
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                // Page is visible again, reload the video feed
+                reloadVideoFeed();
+            }
+        });
+    </script>
+</body>
+</html>

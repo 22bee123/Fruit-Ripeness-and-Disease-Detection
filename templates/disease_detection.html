@@ -12,7 +12,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background-image:url({{url_for('static', filename='image.jpg')}});
             background-repeat:no-repeat;
             background-attachment:fixed;
@@ -21,11 +21,45 @@
         }
         .container {
             text-align: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 90%;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 30px;
+            font-size: 36px;
+            background: linear-gradient(45deg, #ff7300, #ff0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .option-group {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 300px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .option-group h2 {
+            color: #007bff;
+            margin-top: 0;
+            margin-bottom: 15px;
         }
         .btn {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 18px;
+            padding: 12px 20px;
+            margin: 8px 0;
+            font-size: 16px;
             text-decoration: none;
             color: #fff;
             background-color: #007bff;
@@ -34,19 +68,51 @@
             cursor: pointer;
             transition: background-color 0.3s;
             display: block;
+            width: 100%;
         }
         .btn:hover {
             background-color: #0056b3;
+        }
+        .btn.realtime {
+            background-color: #28a745;
+        }
+        .btn.realtime:hover {
+            background-color: #218838;
+        }
+        .btn.home {
+            background-color: #6c757d;
+            margin-top: 20px;
+        }
+        .btn.home:hover {
+            background-color: #5a6268;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Disease Detection</h1>
-        <a href="/banana_detection" class="btn">Banana Disease Detection</a>
-        <a href="/mango_detection" class="btn">Mango Disease Detection</a>
-        <a href="/pomogranate_detection" class="btn">Pomogranate Disease Detection</a>
-        <a href="/">Back to Home</a>
+        
+        <div class="options-container">
+            <div class="option-group">
+                <h2>Banana</h2>
+                <a href="/banana_detection" class="btn">Upload Image</a>
+                <a href="/realtime_banana_disease" class="btn realtime">Real-time Camera</a>
+            </div>
+            
+            <div class="option-group">
+                <h2>Mango</h2>
+                <a href="/mango_detection" class="btn">Upload Image</a>
+                <a href="/realtime_mango_disease" class="btn realtime">Real-time Camera</a>
+            </div>
+            
+            <div class="option-group">
+                <h2>Pomegranate</h2>
+                <a href="/pomogranate_detection" class="btn">Upload Image</a>
+                <a href="/realtime_pomogranate_disease" class="btn realtime">Real-time Camera</a>
+            </div>
+        </div>
+        
+        <a href="/" class="btn home">Back to Home</a>
     </div>
 </body>
 </html>
